@@ -14,7 +14,16 @@ This skill helps you work with Jujutsu, a Git-compatible VCS with mutable commit
 
 When running as an agent:
 
-1. **Always use `-m` flags** to provide messages inline rather than relying on editor prompts:
+1. **Always use `--no-pager`** to prevent commands from opening an interactive pager (like `less`), which will hang the agent:
+
+```bash
+# Always use --no-pager on commands that produce output
+jj --no-pager log          # NOT: jj log
+jj --no-pager diff         # NOT: jj diff
+jj --no-pager show <id>    # NOT: jj show <id>
+```
+
+2. **Always use `-m` flags** to provide messages inline rather than relying on editor prompts:
 
 ```bash
 # Always use -m to avoid editor prompts
@@ -24,7 +33,7 @@ jj squash -m "message"    # NOT: jj squash (which opens editor)
 
 Editor-based commands will fail in non-interactive environments.
 
-2. **Verify operations with `jj st`** after mutations (`squash`, `abandon`, `rebase`, `restore`) to confirm the operation succeeded.
+3. **Verify operations with `jj st`** after mutations (`squash`, `abandon`, `rebase`, `restore`) to confirm the operation succeeded.
 
 ## Core Concepts
 
@@ -85,16 +94,16 @@ Examples:
 
 ```bash
 # View recent commits
-jj log
+jj --no-pager log
 
 # View with patches
-jj log -p
+jj --no-pager log -p
 
 # View specific commit
-jj show <change-id>
+jj --no-pager show <change-id>
 
 # View diff of working copy
-jj diff
+jj --no-pager diff
 ```
 
 ### Moving Between Commits
@@ -187,7 +196,7 @@ jj bookmark create my-feature -r@
 jj bookmark move my-feature --to <change-id>
 
 # List bookmarks
-jj bookmark list
+jj --no-pager bookmark list
 
 # Delete a bookmark
 jj bookmark delete my-feature
@@ -281,7 +290,7 @@ jj st
 
 **IMPORTANT**: Because commits are mutable, always refine them:
 
-1. **Review your commit**: `jj show @` or `jj diff`
+1. **Review your commit**: `jj --no-pager show @` or `jj --no-pager diff`
 2. **Is it atomic?** One logical change per commit
 3. **Is the message clear?** Use imperative verb phrase in sentence case format with no full stop: "Verb object"
 4. **Are there unrelated changes?** Use `jj restore` to move changes out, then create separate commits
@@ -293,8 +302,8 @@ jj st
 |--------|---------|
 | Describe commit | `jj desc -m "message"` |
 | View status | `jj st` |
-| View log | `jj log` |
-| View diff | `jj diff` |
+| View log | `jj --no-pager log` |
+| View diff | `jj --no-pager diff` |
 | New commit | `jj st` then `jj new` only if `@` has changes, then `jj desc -m "message"` |
 | Edit commit | `jj edit <id>` |
 | Squash to parent | `jj squash` |
