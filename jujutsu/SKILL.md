@@ -94,10 +94,10 @@ Each commit should represent ONE logical change. Use this format for commit mess
 
 ```
 Examples:
-- "Add validation to user input forms"
-- "Fix null pointer in payment processor"
-- "Remove deprecated API endpoints"
-- "Update dependencies to latest versions"
+- "feat: add validation to user input forms"
+- "fix: null pointer in payment processor"
+- "fix: remove deprecated API endpoints"
+- "build: update dependencies to latest versions"
 ```
 
 ### Viewing History
