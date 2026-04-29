@@ -14,7 +14,16 @@ This skill helps you work with Jujutsu, a Git-compatible VCS with mutable commit
 
 When running as an agent:
 
-1. **Always use `-m` flags** to provide messages inline rather than relying on editor prompts:
+1. **Always use `--no-pager`** to prevent commands from opening an interactive pager (like `less`), which will hang the agent:
+
+```bash
+# Always use --no-pager on commands that produce output
+jj --no-pager log          # NOT: jj log
+jj --no-pager diff --git   # NOT: jj diff
+jj --no-pager show <id>    # NOT: jj show <id>
+```
+
+2. **Always use `-m` flags** to provide messages inline rather than relying on editor prompts:
 
 ```bash
 # Always use -m to avoid editor prompts
@@ -24,7 +33,7 @@ jj squash -m "message"    # NOT: jj squash (which opens editor)
 
 Editor-based commands will fail in non-interactive environments.
 
-2. **Verify operations with `jj st`** after mutations (`squash`, `abandon`, `rebase`, `restore`) to confirm the operation succeeded.
+3. **Verify operations with `jj st`** after mutations (`squash`, `abandon`, `rebase`, `restore`) to confirm the operation succeeded.
 
 ## Core Concepts
 
@@ -95,16 +104,16 @@ Examples:
 
 ```bash
 # View recent commits
-jj log
+jj --no-pager log
 
 # View with patches
-jj log -p
+jj --no-pager log -p
 
 # View specific commit
-jj show <change-id>
+jj --no-pager show <change-id>
 
 # View diff of working copy
-jj diff
+jj --no-pager diff
 ```
 
 ### Moving Between Commits
@@ -215,7 +224,7 @@ jj bookmark create my-feature -r@
 jj bookmark move my-feature --to <change-id>
 
 # List bookmarks
-jj bookmark list
+jj --no-pager bookmark list
 
 # Delete a bookmark
 jj bookmark delete my-feature
@@ -255,6 +264,7 @@ After fetching, rebase your work onto the updated trunk: `jj rebase -d main`
 In a colocated repository, you can use both jj and git commands with care:
 
 **Switching to git mode** (e.g., for merge workflows):
+
 ```bash
 # First, ensure your jj working copy is clean
 jj st
@@ -264,12 +274,14 @@ git checkout <branch-name>
 ```
 
 **Switching back to jj mode**:
+
 ```bash
 # Use jj edit to resume working with jj
 jj edit <change-id>
 ```
 
 **Important notes:**
+
 - Git may complain about uncommitted changes if jj's working copy differs from the git HEAD
 - ALWAYS ensure your work is committed in jj before switching to git
 - After git operations, jj will detect and incorporate the changes on next command
@@ -287,6 +299,7 @@ jj git push -b main
 ```
 
 **Before pushing, ensure:**
+
 1. Your bookmark points to the correct commit (bookmarks don't auto-advance like git branches)
 2. The commits are refined and atomic
 3. The user has explicitly requested the push
@@ -326,7 +339,7 @@ jj st
 
 **IMPORTANT**: Because commits are mutable, always refine them before considering work done:
 
-1. **Review your commit**: `jj show @` or `jj diff`
+1. **Review your commit**: `jj --no-pager show @` or `jj --no-pager diff --git`
 2. **Is it atomic?** One logical change per commit
 3. **Is the message clear?** Use imperative verb phrase in sentence case format with no full stop: e.g. "Add login endpoint", "Fix null pointer in payment processor", "Remove deprecated API endpoints"
 4. **Are there unrelated changes?** Use `jj restore` to move changes out, then create separate commits
@@ -339,7 +352,7 @@ jj st
 | Describe commit | `jj desc -m "message"` |
 | View status | `jj st` |
 | View log | `jj log` |
-| View diff | `jj diff` |
+| View diff | `jj diff --git` |
 | New commit | `jj new -m "message"` (use `jj st` first; skip if `@` is empty) |
 | Edit commit | `jj edit <id>` |
 | Squash to parent | `jj squash` |
